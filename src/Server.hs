@@ -1,6 +1,6 @@
-module Sever
+module Server
     (
-      mainLoop,
+      connectionLoop,
       processConnection
     ) where
 
@@ -13,13 +13,13 @@ import Network.Socket
 connectionLoop :: Socket -> IO ()
 connectionLoop sock = do
   connection <- accept sock
-  processConnecton connection
+  processConnection connection
   connectionLoop sock
 
 
 -- Sending a test message
 
-procesConnection :: (Socket, SockAddr) -> IO ()
+processConnection :: (Socket, SockAddr) -> IO ()
 processConnection (sock, _) = do
   send sock "Testing\n"
   close sock

@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: aa7dc6eec9388f02ea211124b1a7e7ac8e2d47858122dfdbc7acc6a163f6f8da
+-- hash: 4da2e29f323befa02b75b4a785214a4047f730663e4c6491a238b133d846eca3
 
 name:           haskell-chat-server
 version:        0.1.0.0
@@ -26,13 +26,13 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Server
   other-modules:
       Paths_haskell_chat_server
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      base >=4.7 && <5, network
   default-language: Haskell2010
 
 executable haskell-chat-server-exe
