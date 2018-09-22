@@ -5,6 +5,7 @@ module Server
     ) where
 
 
+import System.IO
 import Network.Socket
 
 
@@ -21,5 +22,7 @@ connectionLoop sock = do
 
 processConnection :: (Socket, SockAddr) -> IO ()
 processConnection (sock, _) = do
-  send sock "Testing\n"
-  close sock
+  hdl <- socketToHandle sock ReadWriteMode
+  hSetBuffering hdl NoBuffering
+  hPutStrLn hdl "hello"
+  hClose hdl
