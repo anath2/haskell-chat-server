@@ -1,26 +1,20 @@
 module Server
-    (
-      connectionLoop,
-      processConnection
-    ) where
+  (
+    processConnection
+  ) where
 
 
 import System.IO
 import Network.Socket
+import Network.Concurrent
 
-
--- Main Loop
-
-connectionLoop :: Socket -> IO ()
-connectionLoop sock = do
-  connection <- accept sock
-  processConnection connection
-  connectionLoop sock
+type Msg = String
 
 
 -- Sending a test message
 
-processConnection :: (Socket, SockAddr) -> IO ()
+
+processConnection :: (Socket, SockAddr) -> Chan Msg -> IO ()
 processConnection (sock, _) = do
   hdl <- socketToHandle sock ReadWriteMode
   hSetBuffering hdl NoBuffering
