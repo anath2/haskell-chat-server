@@ -3,10 +3,10 @@ module Server
     processConnection
   ) where
 
-
+import Control.Monad.Fix (fix)
 import System.IO
 import Network.Socket
-import Network.Concurrent
+import Control.Concurrent
 
 type Msg = String
 
@@ -15,7 +15,8 @@ type Msg = String
 
 
 processConnection :: (Socket, SockAddr) -> Chan Msg -> IO ()
-processConnection (sock, _) = do
+processConnection (sock, _)  chan = do
+  let broadcast msg = writeChan chan msg
   hdl <- socketToHandle sock ReadWriteMode
   hSetBuffering hdl NoBuffering
   hPutStrLn hdl "hello"

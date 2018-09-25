@@ -21,7 +21,7 @@ main = do
 -- Main connection loop
 
 connectionLoop :: Socket -> Chan Msg -> IO ()
-connectionLoop sock = do
+connectionLoop sock chan  = do
   connection <- accept sock
-  forkIO (processConnection connection)  -- Split off each operation into it's own thread
-  connectionLoop sock
+  forkIO (processConnection connection chan)  -- Split off each operation into it's own thread
+  connectionLoop sock chan
