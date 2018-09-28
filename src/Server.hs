@@ -20,4 +20,14 @@ processConnection (sock, _)  chan = do
   hdl <- socketToHandle sock ReadWriteMode
   hSetBuffering hdl NoBuffering
   hPutStrLn hdl "hello"
-  hClose hdl
+  commLine <- dupChan chan
+
+  forkIO $ fix $ \loop -> do
+    line <- readChan commLine
+    hPutStrLn hdl line
+    loop
+
+  fix $ \loop -> do
+    line <- fmap init (hGetLine hdl)
+    broadcast line
+    loop
