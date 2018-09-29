@@ -22,12 +22,16 @@ processConnection (sock, _)  chan = do
   hPutStrLn hdl "hello"
   commLine <- dupChan chan
 
-  forkIO $ fix $ \loop -> do
+  reader <- forkIO $ fix $ \loop -> do
     line <- readChan commLine
     hPutStrLn hdl line
     loop
 
   fix $ \loop -> do
     line <- fmap init (hGetLine hdl)
-    broadcast line
-    loop
+    case line of
+      "quit" -> hPutStrLn hdl "Bye!"
+      _      -> broadcast line >> loop
+
+  killThread reader
+  hClose hdl
