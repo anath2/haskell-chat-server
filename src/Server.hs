@@ -19,7 +19,11 @@ processConnection (sock, _)  chan = do
   let broadcast msg = writeChan chan msg
   hdl <- socketToHandle sock ReadWriteMode
   hSetBuffering hdl NoBuffering
-  hPutStrLn hdl "hello"
+
+  hPutStrLn hdl "Hi, enter name: "
+  name <- fmap init (hGetLine hdl)
+  broadcast ("::"  ++ name ++ "Entered chat")
+
   commLine <- dupChan chan
 
   reader <- forkIO $ fix $ \loop -> do
