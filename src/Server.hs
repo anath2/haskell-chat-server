@@ -8,26 +8,27 @@ import System.IO
 import Network.Socket
 import Control.Concurrent
 
-type Msg = String
+type Msg = (Int, String)
 
 
 -- Sending a test message
 
 
-processConnection :: (Socket, SockAddr) -> Chan Msg -> IO ()
-processConnection (sock, _)  chan = do
-  let broadcast msg = writeChan chan msg
+processConnection :: (Socket, SockAddr) -> Chan Msg -> Int -> IO ()
+processConnection (sock, _)  chan msgNum = do
+  let broadcast msg = writeChan chan (msgNum, msg)
   hdl <- socketToHandle sock ReadWriteMode
   hSetBuffering hdl NoBuffering
 
   hPutStrLn hdl "Hi, enter name: "
   name <- fmap init (hGetLine hdl)
   broadcast ("::"  ++ name ++ "Entered chat")
+  hPutStrLn hdl ("Welcome" ++ name ++ "!")
 
   commLine <- dupChan chan
 
   reader <- forkIO $ fix $ \loop -> do
-    line <- readChan commLine
+    (nextNum, line) <- readChan commLine
     hPutStrLn hdl line
     loop
 
