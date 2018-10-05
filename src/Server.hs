@@ -3,15 +3,15 @@ module Server
     processConnection
   ) where
 
-import Control.Monad.Fix (fix)
 import System.IO
 import Network.Socket
+
 import Control.Concurrent
+import Control.Exception
+import Control.Monad.Fix (fix)
+import Control.Monad (when)
 
 type Msg = (Int, String)
-
-
--- Sending a test message
 
 
 processConnection :: (Socket, SockAddr) -> Chan Msg -> Int -> IO ()
@@ -29,10 +29,10 @@ processConnection (sock, _)  chan msgNum = do
 
   reader <- forkIO $ fix $ \loop -> do
     (nextNum, line) <- readChan commLine
-    hPutStrLn hdl line
+    when (msgNum /= nextNum) $ hPutStrLn hdl line
     loop
 
-  fix $ \loop -> do
+  handle (\(SomeException _) -> return ()) $ fix $ \loop -> do
     line <- fmap init (hGetLine hdl)
     case line of
       "quit" -> hPutStrLn hdl "Bye!"
